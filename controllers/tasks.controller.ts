@@ -1,7 +1,8 @@
-import {Request, Response} from 'express'
+import {NextFunction, Request, Response} from 'express'
 import {ITask} from "../models/task.model";
+import {StatusCodes} from "http-status-codes";
 const Task = require('../models/task.model')
-
+const asyncWrapper = require('../middleware/async')
 
 export interface ApiRequestInterface<T,Req = {}> extends Request<Req> {
     body: T
@@ -11,41 +12,25 @@ export type TaskParamsType = {
     id: string | number
 }
 
-const getAllTasks = async (req: Request, res: Response) => {
-    try {
-        const tasks = await Task.find({})
+const getAllTasks = asyncWrapper(async (req: Request, res: Response) => {
+        const tasks = Task.find({})
         res.status(200).json({ tasks })
-    }
-    catch (e) {
-        res.status(500).json(e)
-    }
-}
+})
 
-const createTask = async (req: ApiRequestInterface<ITask>, res: Response) => {
-    try {
+const createTask = asyncWrapper (async (req: ApiRequestInterface<ITask>, res: Response) => {
         const task = await Task.create(req.body)
         res.status(201).json({task})
-    }
-    catch (e) {
-        res.status(500).json(e)
-    }
-}
+})
 
-const getTask = async (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
-    try {
+const getTask = asyncWrapper( async (req: ApiRequestInterface<{},TaskParamsType>, res: Response, next: NextFunction) => {
         const taskId = req.params.id
         const task = await Task.findOne({ _id: taskId })
         if (!task) {
-        return res.status(404).json(`Task ${taskId} not found`)
+            return createCustomError(`No task with id : ${taskId}`, StatusCodes.NOT_FOUND)
         }
         res.status(200).json({ task })
-    }
-    catch (e) {
-        res.status(500).json(e)
-    }
-}
-const updateTask = async (req: ApiRequestInterface<ITask,TaskParamsType>, res: Response) => {
-    try {
+})
+const updateTask = asyncWrapper(async (req: ApiRequestInterface<ITask,TaskParamsType>, res: Response) => {
         const taskId = req.params.id
         const task = await Task.findOneAndUpdate({ _id: taskId }, req.body, {
             new: true,
@@ -55,24 +40,15 @@ const updateTask = async (req: ApiRequestInterface<ITask,TaskParamsType>, res: R
             return res.status(404).json(`Task ${taskId} not found`)
         }
         res.status(200).json({ task })
-    }
-    catch (e) {
-        res.status(500).json(e)
-    }
-}
-const deleteTask = async (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
-    try {
+})
+const deleteTask = asyncWrapper(async (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
         const taskId = req.params.id
         const task = await Task.findOneAndDelete({ _id: taskId })
         if (!task) {
             return res.status(404).json(`Task ${taskId} not found`)
-        }
+         }
         res.status(200).json({ status: 'success' })
-    }
-    catch (e) {
-        res.status(500).json(e)
-    }
-}
+})
 
 module .exports = {
     getAllTasks,

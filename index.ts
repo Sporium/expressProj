@@ -1,22 +1,20 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
 import "dotenv/config";
 const connectDB = require('./db-connect')
 
 const app: Express = express();
 const port = process.env.PORT;
-
+const notFound = require('./middleware/not-found')
+const errorHandlerMiddleware = require('./middleware/error-handler')
 const routes = require('./routes/tasks')
-//middlewares
 
+//middlewares
 app.use(express.json())
 
 //routes
-app.get('/hello', (req: Request, res: Response) => {
-    res.send('Express + TypeScript Server');
-});
-
 app.use('/api/v1/tasks', routes)
-
+app.use(notFound)
+app.use(errorHandlerMiddleware)
 
 const start = async () => {
     try {
