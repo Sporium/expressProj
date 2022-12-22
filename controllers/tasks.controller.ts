@@ -1,4 +1,4 @@
-import {NextFunction, Request, Response} from 'express'
+import { Request, Response} from 'express'
 import {ITask} from "../models/task.model";
 import {StatusCodes} from "http-status-codes";
 const Task = require('../models/task.model')
@@ -15,23 +15,23 @@ export type TaskParamsType = {
 const getAllTasks = asyncWrapper(async (req: Request, res: Response) => {
     try {
         const tasks = await Task.find({})
-        res.status(200).json({ tasks })
+        res.status(StatusCodes.OK).json({ tasks })
     }
     catch (e) {
-        res.status(500).json(e)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e)
     }
 })
 
 const createTask = asyncWrapper (async (req: ApiRequestInterface<ITask>, res: Response) => {
         const task = await Task.create(req.body)
-        res.status(201).json({task})
+        res.status(StatusCodes.CREATED).json({task})
 })
 
 const getTask = asyncWrapper( async (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
     const taskId = req.params.id
     return Task.findOne({_id: taskId}).exec((error: ErrorCallback, task: TaskParamsType | undefined) => {
         if (task) {
-            res.status(200).json({task})
+            res.status(StatusCodes.OK).json({task})
         } else {
             res.status(StatusCodes.NOT_FOUND).send({message: `No task with id : ${taskId}`});
         }
@@ -44,7 +44,7 @@ const updateTask = asyncWrapper(async (req: ApiRequestInterface<ITask,TaskParams
         runValidators: true
     }).exec((error: ErrorCallback, task: TaskParamsType | undefined) => {
         if (task) {
-            res.status(200).json({task})
+            res.status(StatusCodes.OK).json({task})
         } else {
             res.status(StatusCodes.NOT_FOUND).send({message: `No task with id : ${taskId}`});
         }
@@ -55,7 +55,7 @@ const deleteTask = asyncWrapper(async (req: ApiRequestInterface<{},TaskParamsTyp
     const taskId = req.params.id
     return Task.findOneAndDelete({ _id: taskId }).exec((error: ErrorCallback, task: TaskParamsType | undefined) => {
             if (task) {
-                res.status(200).json({task})
+                res.status(StatusCodes.OK).json({task})
             } else {
                 res.status(StatusCodes.NOT_FOUND).send({message: `No task with id : ${taskId}`});
             }
