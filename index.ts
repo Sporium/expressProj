@@ -1,12 +1,14 @@
 import express, { Express } from 'express';
 import "dotenv/config";
+import mongoose from "mongoose";
 const connectDB = require('./db-connect')
 
 const app: Express = express();
 const port = process.env.PORT;
 const notFound = require('./middleware/not-found')
-const errorHandlerMiddleware = require('./middleware/error-handler')
 const routes = require('./routes/tasks')
+
+mongoose.set('strictQuery', false);
 
 //middlewares
 app.use(express.json())
@@ -14,7 +16,6 @@ app.use(express.json())
 //routes
 app.use('/api/v1/tasks', routes)
 app.use(notFound)
-app.use(errorHandlerMiddleware)
 
 const start = async () => {
     try {

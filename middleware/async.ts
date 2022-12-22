@@ -7,7 +7,7 @@ const asyncWrapper = (fn: (req: Request, res: Response, next: NextFunction) => P
             await fn(req,res,next)
         }
         catch (e) {
-            return e;
+            return next(e);
         }
     }
 }
