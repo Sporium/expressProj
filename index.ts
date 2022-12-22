@@ -1,7 +1,7 @@
 import express, { Express } from 'express';
 import "dotenv/config";
 import mongoose from "mongoose";
-const connectDB = require('./db-connect')
+const connectDB = require('./config/db-connect')
 
 const app: Express = express();
 const port = process.env.PORT;
