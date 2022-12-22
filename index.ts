@@ -1,7 +1,6 @@
 import express, { Express, Request, Response } from 'express';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import "dotenv/config";
+const connectDB = require('./db-connect')
 
 const app: Express = express();
 const port = process.env.PORT;
@@ -19,9 +18,19 @@ app.get('/hello', (req: Request, res: Response) => {
 app.use('/api/v1/tasks', routes)
 
 
-app.listen(port, () => {
-    console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
-}).on("error", err => {
-    console.error(err)
-    return err;
-});
+const start = async () => {
+    try {
+        await connectDB(process.env.MONGODB_URI)
+        app.listen(port, () => {
+            console.log(`⚡️[server]: Server is running at https://localhost:${port}`);
+        }).on("error", err => {
+            console.error(err)
+            return err;
+        });
+    }
+    catch (e) {
+        console.error(e)
+    }
+}
+start()
+
