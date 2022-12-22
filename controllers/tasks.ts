@@ -1,20 +1,34 @@
 import {Request, Response} from 'express'
 
-
 const getAllTasks = (req: Request, res: Response) => {
     res.send('All tasks controller')
 }
-const createTask = (req: Request, res: Response) => {
-    res.send('createTask')
+
+export interface ApiRequestInterface<T,Req = {}> extends Request<Req> {
+    body: T
 }
-const getTask = (req: Request, res: Response) => {
-    res.send('getTask')
+
+type TaskType = {
+    name: string,
+    completed: boolean
 }
-const updateTask = (req: Request, res: Response) => {
-    res.send('updateTask')
+export type TaskParamsType = {
+    id: string | number
 }
-const deleteTask = (req: Request, res: Response) => {
-    res.send('deleteTask')
+
+
+const createTask = (req: ApiRequestInterface<TaskType>, res: Response) => {
+    res.json(req.body)
+}
+
+const getTask = (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
+    res.json({ id: req.params.id })
+}
+const updateTask = (req: ApiRequestInterface<TaskType,TaskParamsType>, res: Response) => {
+    res.json({ ...req.body, id: req.params.id })
+}
+const deleteTask = (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
+    res.json({ id: req.params.id })
 }
 
 module .exports = {
