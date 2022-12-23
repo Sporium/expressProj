@@ -1,5 +1,18 @@
 interface Error {
     statusCode: number;
+    errors: {
+        [key: string]: {
+            name: string,
+            message: string,
+            properties: {
+                message: string,
+                type: string,
+                path: string
+            },
+            kind: string,
+            path: string
+        }
+    }
 }
 
 class CustomAPIError extends Error {

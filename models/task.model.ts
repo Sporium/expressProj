@@ -1,12 +1,13 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const taskService = require('../services/task.service')
+const taskResource = require('../resources/task.resource')
+
 export interface ITask {
     name: string,
-    completed: boolean
+    completed: boolean,
+    id: string
 }
 
-export interface ITaskDocument extends ITask, Document {}
 export interface ITaskModel extends ITask {
     _id: string,
     __v: number
@@ -19,10 +20,10 @@ const TaskSchema = new Schema({
 })
 
 const tasksCollection = (tasks: ITask[]) => {
-    return tasks.map(task => taskService(task))
+    return tasks.map(task => taskResource(task))
 }
 
 module.exports = {
-    Task: mongoose.model<ITaskDocument>('Task', TaskSchema),
+    Task: mongoose.model<ITask>('Task', TaskSchema),
     tasksCollection
 }
