@@ -35,7 +35,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"zxczx dftest\",\n    \"completed\": true\n}"
+					"raw": "{\n    \"name\": \"test name\",\n    \"completed\": true\n}"
 				},
 				"url": {
 					"raw": "{{URL}}/tasks",
@@ -93,7 +93,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"zxczxczxc\",\n    \"completed\": true\n}"
+					"raw": "{\n    \"name\": \"zzzz\",\n    \"completed\": true\n}"
 				},
 				"url": {
 					"raw": "{{URL}}/tasks/63a4682d6b6f00b76b13c02e",
@@ -124,13 +124,13 @@
 					"raw": "{\n    \"name\": \"test\",\n    \"completed\": true\n}"
 				},
 				"url": {
-					"raw": "{{URL}}/tasks/{{id}}",
+					"raw": "{{URL}}/tasks/63a4682d6b6f00b76b13c02e",
 					"host": [
 						"{{URL}}"
 					],
 					"path": [
 						"tasks",
-						"{{id}}"
+						"63a4682d6b6f00b76b13c02e"
 					]
 				}
 			},
