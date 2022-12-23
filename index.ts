@@ -6,7 +6,7 @@ const connectDB = require('./config/db-connect')
 const app: Express = express();
 const port = process.env.PORT;
 const notFound = require('./middleware/not-found')
-const routes = require('./routes/tasks')
+const routes = require('./routes/router')
 
 mongoose.set('strictQuery', false);
 
@@ -14,7 +14,7 @@ mongoose.set('strictQuery', false);
 app.use(express.json())
 
 //routes
-app.use('/api/v1/tasks', routes)
+app.use('/api/v1', routes)
 app.use(notFound)
 
 const start = async () => {
