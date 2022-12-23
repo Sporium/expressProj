@@ -1,0 +1,140 @@
+{
+	"info": {
+		"_postman_id": "8aab155f-2db8-495a-918d-6ad4a9a0c924",
+		"name": "expresProj",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "getAllTasks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{URL}}/tasks",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Task",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"zxczx dftest\",\n    \"completed\": true\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/tasks",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Task",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"test\",\n    \"completed\": true\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/tasks/63a4682d6b6f00b76b13c02e",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"tasks",
+						"63a4682d6b6f00b76b13c02e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Task",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"zxczxczxc\",\n    \"completed\": true\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/tasks/63a4682d6b6f00b76b13c02e",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"tasks",
+						"63a4682d6b6f00b76b13c02e"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Task",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"test\",\n    \"completed\": true\n}"
+				},
+				"url": {
+					"raw": "{{URL}}/tasks/{{id}}",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"tasks",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
