@@ -6,135 +6,234 @@
 	},
 	"item": [
 		{
-			"name": "getAllTasks",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{URL}}/tasks",
-					"host": [
-						"{{URL}}"
-					],
-					"path": [
-						"tasks"
-					]
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"userNcazzmcscxxAc\",\n    \"password\": \"dsdddd\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/auth/register",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LogOut",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bareer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYTcwMGM4ZThiMDkzOTBiODk1M2JhOCIsIm5hbWUiOiJ1c2VyTmNhenptY3NjeHhBYyIsImlhdCI6MTY3MTg4OTE1OCwiZXhwIjoxNjcxODkyNzU4fQ.TR2erpjLH_0JIVhAEOUnQaPuyPxafRlWnPFgz5492Io",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"userNa\",\n    \"password\": \"dsdddd\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/auth/signout",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"signout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"userNcazzmcscxxAc\",\n    \"password\": \"dsdddd\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/auth/signin",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Create Task",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "default"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"test name\",\n    \"completed\": true\n}"
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "getAllTasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/tasks",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{URL}}/tasks",
-					"host": [
-						"{{URL}}"
-					],
-					"path": [
-						"tasks"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Task",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "default"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"test\",\n    \"completed\": true\n}"
+				{
+					"name": "Create Task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"test name\",\n    \"completed\": true\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/tasks",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"tasks"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{URL}}/tasks/63a4682d6b6f00b76b13c02e",
-					"host": [
-						"{{URL}}"
-					],
-					"path": [
-						"tasks",
-						"63a4682d6b6f00b76b13c02e"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update Task",
-			"request": {
-				"method": "PUT",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "default"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"zzzz\",\n    \"completed\": true\n}"
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"zzzz\",\n    \"completed\": true\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/tasks/63a4682d6b6f00b76b13c02e",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"tasks",
+								"63a4682d6b6f00b76b13c02e"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{URL}}/tasks/63a4682d6b6f00b76b13c02e",
-					"host": [
-						"{{URL}}"
-					],
-					"path": [
-						"tasks",
-						"63a4682d6b6f00b76b13c02e"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Task",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "default"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"test\",\n    \"completed\": true\n}"
+				{
+					"name": "Get Task",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"test\",\n    \"completed\": true\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/tasks/63a46909ac696f3d1c534138",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"tasks",
+								"63a46909ac696f3d1c534138"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{URL}}/tasks/63a4682d6b6f00b76b13c02e",
-					"host": [
-						"{{URL}}"
-					],
-					"path": [
-						"tasks",
-						"63a4682d6b6f00b76b13c02e"
-					]
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"test\",\n    \"completed\": true\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/tasks/63a4682d6b6f00b76b13c02e",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"tasks",
+								"63a4682d6b6f00b76b13c02e"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	]
 }
