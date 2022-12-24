@@ -3,12 +3,13 @@ import mongoose, { Schema } from "mongoose";
 export interface IUser {
     name: string
     id: string | number
-    password: string
+    token?: string
 }
 
 export interface IUserModel extends IUser, Document {
     _id: string,
     __v: number
+    password: string
 }
 
 

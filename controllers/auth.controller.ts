@@ -5,6 +5,7 @@ import {IUser, IUserModel} from "../models/user.model";
 import {decodeToken, generateJWT, getTokenFromHeader} from "../helpers/helpers";
 
 const {User, IUser} = require('../models/user.model')
+const userResource = require('../resources/user.resource')
 
 const asyncWrapper = require('../middleware/async')
 const bcrypt = require("bcrypt")
@@ -27,11 +28,7 @@ const signIn = asyncWrapper(async (req: Request, res: Response<typeof IUser | Er
             const isValid = await comparePassword(password, existingUser.password)
             const token = generateJWT(existingUser)
             if (isValid) {
-                res.status(StatusCodes.OK).json({
-                    name: existingUser.name,
-                    id: existingUser._id,
-                    token: token,
-                })
+                res.status(StatusCodes.OK).json({...userResource(existingUser), token})
             }
         }
         res.status(StatusCodes.BAD_REQUEST).json("Invalid username or password")
@@ -42,7 +39,7 @@ const signIn = asyncWrapper(async (req: Request, res: Response<typeof IUser | Er
     }
 })
 
-const register = asyncWrapper(async (req: ApiRequestInterface<IUser>, res: Response<typeof IUser | Error>) => {
+const register = asyncWrapper(async (req: ApiRequestInterface<IUserModel>, res: Response<typeof IUser | Error>) => {
     try {
         const pass = await generatePass(req.body.password)
         await User.init()
@@ -50,7 +47,8 @@ const register = asyncWrapper(async (req: ApiRequestInterface<IUser>, res: Respo
             name: req.body.name,
             password: pass
         })
-        res.status(StatusCodes.CREATED).json({user})
+        const token = generateJWT({id: user._id, name: user.name})
+        res.status(StatusCodes.CREATED).json({...userResource(user), token})
     }
     catch (e) {
         const err = e as Error
@@ -72,8 +70,7 @@ const signOut = asyncWrapper(async (req: Request, res: Response<{} | Error>) => 
         if(!token) {
             res.status(200).json({success:false, message: "Error!Token was not provided."});
         }
-        const decodedToken: IUser = decodeToken(token);
-        res.status(200).json({ name: decodedToken.name, id: decodedToken.id });
+        res.status(200).json({});
         }
     catch (e) {
         const err = e as Error
