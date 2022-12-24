@@ -13,6 +13,10 @@ interface Error {
             path: string
         }
     }
+    code: number,
+    keyValue: {
+        [key: string]: string
+    }
 }
 
 class CustomAPIError extends Error {

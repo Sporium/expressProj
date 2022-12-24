@@ -4,8 +4,10 @@ const connectDB = (url: string) => {
     return mongoose.connect(
         url,
         {
-            useNewUrlParser: true,
             useUnifiedTopology: true,
+            useNewUrlParser: true,
+            useCreateIndex: true,
+            autoIndex: true,
         } as mongoose.ConnectOptions
     )
 }
