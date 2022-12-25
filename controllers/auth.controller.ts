@@ -2,7 +2,7 @@ import {Request, Response} from "express";
 import {StatusCodes} from "http-status-codes";
 import {ApiRequestInterface} from "../controllers/tasks.controller";
 import {IUser, IUserModel} from "../models/user.model";
-import {decodeToken, generateJWT, getTokenFromHeader} from "../helpers/helpers";
+import {generateJWT, getTokenFromHeader} from "../helpers/helpers";
 
 const {User, IUser} = require('../models/user.model')
 const userResource = require('../resources/user.resource')

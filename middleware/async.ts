@@ -8,7 +8,7 @@ const asyncWrapper = (fn: (req: Request, res: Response, next: NextFunction) => P
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                return res.status(StatusCodes.BAD_REQUEST).json('errors')
+                return res.status(StatusCodes.BAD_REQUEST).json(errors)
             }
             await fn(req,res,next)
         }

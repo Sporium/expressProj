@@ -13,8 +13,15 @@ const {
     deleteTask
 } = require('../controllers/tasks.controller')
 
-router.route('/tasks/').get(getAllTasks).post([authenticateJWT,createTask])
-router.route('/tasks/:id').get(getTask).put([authenticateJWT,updateTask]).delete([authenticateJWT,deleteTask])
+const taskValidationRules = [
+    check("name")
+        .exists().withMessage('Name is required field')
+        .isLength({ min: 2, max: 200 })
+        .withMessage("Task should contain min 2 and max 200 symbols")
+]
+
+router.route('/tasks/').get(getAllTasks).post([authenticateJWT, taskValidationRules, createTask])
+router.route('/tasks/:id').get(getTask).put([authenticateJWT, taskValidationRules, updateTask]).delete([authenticateJWT,deleteTask])
 
 const {
     signIn,
