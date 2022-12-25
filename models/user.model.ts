@@ -6,19 +6,19 @@ export interface IUser {
     token?: string
 }
 
-export interface IUserModel extends IUser, Document {
+export interface IUserModel extends IUser {
     _id: string,
     __v: number
     password: string
 }
 
 
-const UserSchema = new Schema({
+const UserSchema = new Schema<IUser>({
     name: { type: String, required: [true, 'Name is required'], maxLength: 20, unique: true },
     password: { type: String, required: [true, 'Password is required']},
 })
 
 
 module.exports = {
-    User: mongoose.model<IUserModel>('User', UserSchema),
+    User: mongoose.model<IUser>('User', UserSchema),
 }

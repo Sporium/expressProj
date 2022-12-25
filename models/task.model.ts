@@ -14,7 +14,7 @@ export interface ITaskModel extends ITask {
 }
 
 
-const TaskSchema = new Schema({
+const TaskSchema = new Schema<ITask>({
     name: { type: String, required: [true, 'Name is required'], maxLength: 200 },
     completed: { type: Boolean, default: false },
 })
