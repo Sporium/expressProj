@@ -1,10 +1,11 @@
 import {Request, Response} from "express";
 import {StatusCodes} from "http-status-codes";
 import {ApiRequestInterface} from "../controllers/tasks.controller";
-import {IUser, IUserModel} from "../models/user.model";
+import {IUserModel} from "../models/user.model";
 import {generateJWT, getTokenFromHeader} from "../helpers/helpers";
 
 const {User, IUser} = require('../models/user.model')
+const {AuthTokenBlackList} = require('../models/token.model')
 const userResource = require('../resources/user.resource')
 
 const asyncWrapper = require('../middleware/async')
@@ -78,8 +79,25 @@ const signOut = asyncWrapper(async (req: Request, res: Response<{} | Error>) => 
     }
 })
 
+//add token to blacklist
+const invalidateJWT = asyncWrapper(async (req: Request, res: Response<{} | Error>) => {
+    try {
+        const token = getTokenFromHeader(req.headers.authorization)
+        if(!token) {
+            res.status(200).json({success:false, message: "Error!Token was not provided."});
+        }
+        await AuthTokenBlackList.create({token})
+        res.status(200).json({});
+    }
+    catch (e) {
+        const err = e as Error
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(err)
+    }
+})
+
 module.exports = {
     signIn,
     signOut,
-    register
+    register,
+    invalidateJWT
 }
