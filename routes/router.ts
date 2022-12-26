@@ -27,7 +27,7 @@ const {
     signIn,
     signOut,
     register,
-    invalidateJWt,
+    invalidateJWT,
 } = require('../controllers/auth.controller')
 
 const registerValidationRules = [
@@ -39,6 +39,6 @@ const registerValidationRules = [
 router.route('/auth/signin').post(signIn)
 router.route('/auth/signout').post([authenticateJWT,signOut])
 router.route('/auth/register').post(registerValidationRules,  register)
-router.route('/auth/invalidate-token').post([authenticateJWT, invalidateJWt])
+router.route('/auth/invalidate-token').post([authenticateJWT, invalidateJWT])
 
 module.exports =  router
