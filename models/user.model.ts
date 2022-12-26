@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 export interface IUser {
     name: string
     id: string | number
-    token?: string
+    authTokens?: string[]
 }
 
 export interface IUserModel extends IUser {
@@ -16,6 +16,10 @@ export interface IUserModel extends IUser {
 const UserSchema = new Schema<IUser>({
     name: { type: String, required: [true, 'Name is required'], maxLength: 20, unique: true },
     password: { type: String, required: [true, 'Password is required']},
+    tasks: [{
+        type: Schema.Types.ObjectId,
+        ref: "Task"
+    }]
 })
 
 

@@ -42,12 +42,12 @@ const signIn = asyncWrapper(async (req: Request, res: Response<typeof IUser | Er
 const register = asyncWrapper(async (req: ApiRequestInterface<IUserModel>, res: Response<typeof IUser | Error>) => {
     try {
         const pass = await generatePass(req.body.password)
-        await User.init()
-        const user = await User.create({
+        const user = await new User({
             name: req.body.name,
-            password: pass
+            password: pass,
         })
         const token = generateJWT({id: user._id, name: user.name})
+        await user.save()
         res.status(StatusCodes.CREATED).json({...userResource(user), token})
     }
     catch (e) {
@@ -60,7 +60,7 @@ const register = asyncWrapper(async (req: ApiRequestInterface<IUserModel>, res: 
                 }
             }))
         }
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(err.name)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(err)
     }
 })
 

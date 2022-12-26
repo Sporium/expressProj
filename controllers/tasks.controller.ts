@@ -1,7 +1,10 @@
 import { Request, Response} from 'express'
 import {ITask, ITaskModel} from "../models/task.model";
 import {StatusCodes} from "http-status-codes";
+import {getTokenFromHeader} from "../helpers/helpers";
+import jwt, {JwtPayload} from "jsonwebtoken";
 const {Task, tasksCollection} = require('../models/task.model')
+const {User} = require('../models/user.model')
 const taskResource = require('../resources/task.resource')
 const asyncWrapper = require('../middleware/async')
 
@@ -27,6 +30,8 @@ const createTask = asyncWrapper (async (req: ApiRequestInterface<ITask>, res: Re
     try {
         await Task.validate(req.body)
         const task = await Task.create(req.body)
+        const token = jwt.decode(getTokenFromHeader(req.headers.authorization)) as JwtPayload
+        await User.findOneAndUpdate({ _id: token.id }, {$push: {tasks: task._id}}, { new: true });  //update users relation
         res.status(StatusCodes.CREATED).json(taskResource(task))
     }
     catch (e) {
@@ -61,8 +66,10 @@ const updateTask = asyncWrapper(async (req: ApiRequestInterface<ITask,TaskParams
 
 const deleteTask = asyncWrapper(async (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
     const taskId = req.params.id
-    return Task.findOneAndDelete({ _id: taskId }).exec((error: ErrorCallback, task: ITaskModel | undefined) => {
+    return Task.findOneAndDelete({ _id: taskId }).exec( async (error: ErrorCallback, task: ITaskModel | undefined) => {
             if (task) {
+                const token = jwt.decode(getTokenFromHeader(req.headers.authorization)) as JwtPayload
+                User.findOneAndUpdate({ _id: token.id }, {$pull: {tasks: task._id}}, { new: true }); //update users relation
                 res.status(StatusCodes.OK).json(taskResource(task))
             } else {
                 res.status(StatusCodes.NOT_FOUND).send({message: `No task with id : ${taskId}`});
