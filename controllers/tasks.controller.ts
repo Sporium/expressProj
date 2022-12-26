@@ -31,7 +31,7 @@ const createTask = asyncWrapper (async (req: ApiRequestInterface<ITask>, res: Re
         await Task.validate(req.body)
         const task = await Task.create(req.body)
         const token = jwt.decode(getTokenFromHeader(req.headers.authorization)) as JwtPayload
-        await User.findOneAndUpdate({ _id: token.id }, {$push: {tasks: task._id}}, { new: true });  //update users relation
+        await User.findOneAndUpdate({ _id: token.id }, {$push: {tasks: task._id}}, { new: true, useFindAndModify: true });  //update users relation
         res.status(StatusCodes.CREATED).json(taskResource(task))
     }
     catch (e) {
@@ -54,7 +54,8 @@ const updateTask = asyncWrapper(async (req: ApiRequestInterface<ITask,TaskParams
     const taskId = req.params.id
     return Task.findOneAndUpdate({ _id: taskId }, req.body, {
         new: true,
-        runValidators: true
+        runValidators: true,
+        useFindAndModify: true
     }).exec((error: ErrorCallback, task: ITaskModel | undefined) => {
         if (task) {
             res.status(StatusCodes.OK).json(taskResource(task))
@@ -69,7 +70,7 @@ const deleteTask = asyncWrapper(async (req: ApiRequestInterface<{},TaskParamsTyp
     return Task.findOneAndDelete({ _id: taskId }).exec( async (error: ErrorCallback, task: ITaskModel | undefined) => {
             if (task) {
                 const token = jwt.decode(getTokenFromHeader(req.headers.authorization)) as JwtPayload
-                User.findOneAndUpdate({ _id: token.id }, {$pull: {tasks: task._id}}, { new: true }); //update users relation
+                User.findOneAndUpdate({ _id: token.id }, {$pull: {tasks: task._id}}, { new: true, useFindAndModify: true }); //update users relation
                 res.status(StatusCodes.OK).json(taskResource(task))
             } else {
                 res.status(StatusCodes.NOT_FOUND).send({message: `No task with id : ${taskId}`});
