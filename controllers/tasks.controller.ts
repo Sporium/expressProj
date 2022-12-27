@@ -55,7 +55,7 @@ const getTaskByUser = asyncWrapper( async (req: ApiRequestInterface<{},TaskParam
     if (req.query.id) {
         try {
             const userTasks = await User.findOne({_id: req.query.id}).populate('tasks');
-            res.status(StatusCodes.OK).json(userTasks.tasks)
+            res.status(StatusCodes.OK).json(tasksCollection(userTasks.tasks))
         }
         catch (e) {
             res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
