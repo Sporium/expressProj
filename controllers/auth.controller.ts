@@ -32,7 +32,7 @@ const signIn = asyncWrapper(async (req: Request, res: Response<typeof IUser | Er
                 res.status(StatusCodes.OK).json({...userResource(existingUser), token})
             }
         }
-        res.status(StatusCodes.BAD_REQUEST).json("Invalid username or password")
+        res.status(StatusCodes.BAD_REQUEST).json({message: "Invalid username or password"})
     }
     catch (e) {
         const err = e as Error
@@ -69,9 +69,9 @@ const signOut = asyncWrapper(async (req: Request, res: Response<{} | Error>) => 
     try {
         const token = getTokenFromHeader(req.headers.authorization)
         if(!token) {
-            res.status(200).json({success:false, message: "Error!Token was not provided."});
+            res.status(StatusCodes.OK).json({message: "Error!Token was not provided."});
         }
-        res.status(200).json({});
+        res.status(StatusCodes.OK).json({});
         }
     catch (e) {
         const err = e as Error
@@ -84,10 +84,10 @@ const invalidateJWT = asyncWrapper(async (req: Request, res: Response<{} | Error
     try {
         const token = getTokenFromHeader(req.headers.authorization)
         if(!token) {
-            res.status(200).json({success:false, message: "Error!Token was not provided."});
+            res.status(StatusCodes.OK).json({message: "Error!Token was not provided."});
         }
         await AuthTokenBlackList.create({token})
-        res.status(200).json({});
+        res.status(StatusCodes.OK).json({});
     }
     catch (e) {
         const err = e as Error

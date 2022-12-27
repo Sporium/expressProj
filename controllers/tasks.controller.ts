@@ -46,10 +46,26 @@ const getTask = asyncWrapper( async (req: ApiRequestInterface<{},TaskParamsType>
         if (task) {
             res.status(StatusCodes.OK).json(taskResource(task))
         } else {
-            res.status(StatusCodes.NOT_FOUND).send({message: `No task with id : ${taskId}`});
+            res.status(StatusCodes.NOT_FOUND).json({message: `No task with id : ${taskId}`});
         }
     });
 })
+
+const getTaskByUser = asyncWrapper( async (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
+    if (req.query.id) {
+        try {
+            const userTasks = await User.findOne({_id: req.query.id}).populate('tasks');
+            res.status(StatusCodes.OK).json(userTasks.tasks)
+        }
+        catch (e) {
+            res.status(StatusCodes.NOT_FOUND).json({message: "User not found"});
+        }
+    }
+    else {
+        res.status(StatusCodes.BAD_REQUEST).json({ message:"Please pass id of the user"})
+    }
+})
+
 const updateTask = asyncWrapper(async (req: ApiRequestInterface<ITask,TaskParamsType>, res: Response) => {
     const taskId = req.params.id
     return Task.findOneAndUpdate({ _id: taskId }, req.body, {
@@ -83,5 +99,6 @@ module.exports = {
     createTask,
     getTask,
     updateTask,
-    deleteTask
+    deleteTask,
+    getTaskByUser
 }

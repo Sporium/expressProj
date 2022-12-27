@@ -10,7 +10,8 @@ const {
     createTask,
     getTask,
     updateTask,
-    deleteTask
+    deleteTask,
+    getTaskByUser
 } = require('../controllers/tasks.controller')
 
 const taskValidationRules = [
@@ -21,6 +22,7 @@ const taskValidationRules = [
 ]
 
 router.route('/tasks/').get(getAllTasks).post([authenticateJWT, taskValidationRules, createTask])
+router.route('/users-tasks').get(getTaskByUser)
 router.route('/tasks/:id').get(getTask).put([authenticateJWT, taskValidationRules, updateTask]).delete([authenticateJWT,deleteTask])
 
 const {
