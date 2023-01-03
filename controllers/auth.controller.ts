@@ -40,7 +40,7 @@ const signIn = asyncWrapper(async (req: Request, res: Response<typeof IUser | Er
     }
 })
 
-const register = asyncWrapper(async (req: ApiRequestInterface<IUserModel>, res: Response<typeof IUser | Error>) => {
+const register = asyncWrapper(async (req: ApiRequestInterface<{},{},IUserModel>, res: Response<typeof IUser | Error>) => {
     try {
         const pass = await generatePass(req.body.password)
         const user = await new User({

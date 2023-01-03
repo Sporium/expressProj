@@ -19,6 +19,10 @@ const {
     getTaskByUser
 } = require('../controllers/tasks.controller')
 
+const {
+    resizeImage,
+} = require('../controllers/image.controller')
+
 
 //task routes
 router.route('/tasks/').get(getAllTasks).post([authenticateJWT, taskValidationRules, createTask])
@@ -29,5 +33,8 @@ router.route('/auth/signin').post(signIn)
 router.route('/auth/signout').post([authenticateJWT,signOut])
 router.route('/auth/register').post(registerValidationRules,  register)
 router.route('/auth/invalidate-token').post([authenticateJWT, invalidateJWT])
+
+
+router.route('/image/resize').get(resizeImage)
 
 module.exports =  router

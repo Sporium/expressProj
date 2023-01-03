@@ -11,9 +11,8 @@ const asyncWrapper = require('../middleware/async')
 
 export interface JwtPayload extends IUser {}
 
-export interface ApiRequestInterface<T,Req = {}> extends Request<Req> {
-    body: T
-}
+export interface ApiRequestInterface<ReqDictionary = {}, ResBody = {}, ReqBody = {}, ReqQuery = {}> extends
+    Request<ReqDictionary, ResBody, ReqBody, ReqQuery> {}
 
 export type TaskParamsType = {
     id: string | number
@@ -43,7 +42,7 @@ const createTask = asyncWrapper (async (req: ApiRequestInterface<ITask>, res: Re
     }
 })
 
-const getTask = asyncWrapper( async (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
+const getTask = asyncWrapper( async (req: ApiRequestInterface<TaskParamsType>, res: Response) => {
     const taskId = req.params.id
     return Task.findOne({_id: taskId}).exec((error: ErrorCallback, task: ITaskModel | undefined) => {
         if (task) {
@@ -54,7 +53,7 @@ const getTask = asyncWrapper( async (req: ApiRequestInterface<{},TaskParamsType>
     });
 })
 
-const getTaskByUser = asyncWrapper( async (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
+const getTaskByUser = asyncWrapper( async (req: ApiRequestInterface<{},{},{},TaskParamsType>, res: Response) => {
     if (req.query.id) {
         try {
             const userTasks = await User.findOne({_id: req.query.id}).populate('tasks');
@@ -84,7 +83,7 @@ const updateTask = asyncWrapper(async (req: ApiRequestInterface<ITask,TaskParams
     });
 })
 
-const deleteTask = asyncWrapper(async (req: ApiRequestInterface<{},TaskParamsType>, res: Response) => {
+const deleteTask = asyncWrapper(async (req: ApiRequestInterface<TaskParamsType>, res: Response) => {
     const taskId = req.params.id
     return Task.findOneAndDelete({ _id: taskId }).exec( async (error: ErrorCallback, task: ITaskModel | undefined) => {
             if (task) {
