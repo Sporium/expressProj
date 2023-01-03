@@ -21,7 +21,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"userNcazzmcscxxAc\",\n    \"password\": \"dsdddd\"\n}"
+							"raw": "{\n    \"name\": \"dasd\",\n    \"password\": \"dsdddd\"\n}"
 						},
 						"url": {
 							"raw": "{{URL}}/auth/register",
@@ -82,7 +82,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"userNcazzmcscxxAc\",\n    \"password\": \"dsdddd\"\n}"
+							"raw": "{\n    \"name\": \"sczxczxczxxcv\",\n    \"password\": \"dsdddd\"\n}"
 						},
 						"url": {
 							"raw": "{{URL}}/auth/signin",
@@ -92,6 +92,39 @@
 							"path": [
 								"auth",
 								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invalidate Token",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bareer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYTk2ODJiZDRkZmZiOTFhNWQxZTk3MiIsIm5hbWUiOiJzY3p4Y3p4Y3p4eGN2IiwiaWF0IjoxNjcyMDgxNzU1LCJleHAiOjE2NzIwODUzNTV9.KKOtVo5IW6I4YQybPo55pm05oa5K3Chxkf4TNjsEAJQ",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"userNcazzmcscxxAc\",\n    \"password\": \"dsdddd\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/auth/invalidate-token",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"invalidate-token"
 							]
 						}
 					},
@@ -120,10 +153,44 @@
 					"response": []
 				},
 				{
+					"name": "get tasks by User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bareer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYTk2ODJiZDRkZmZiOTFhNWQxZTk3MiIsIm5hbWUiOiJzY3p4Y3p4Y3p4eGN2IiwiaWF0IjoxNjcyMDg1OTIyLCJleHAiOjE2NzIwODk1MjJ9.9xsVFW7bC_8SNz9AQbqahCxeA9MLXqMzrcilw_UjPdk",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/users-tasks?id=63a9682bd4dffb91a5d1e972",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users-tasks"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "63a9682bd4dffb91a5d1e972"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create Task",
 					"request": {
 						"method": "POST",
 						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bareer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYjNlMzUyYjE5MGRjMDBjYTkzZTE0YyIsIm5hbWUiOiJkYXNkIiwiaWF0IjoxNjcyNzMzNTIyLCJleHAiOjE2NzI3MzcxMjJ9.heGph0rPOY9DwF7tJ8p-BxnIF7fEwS-8vhNDInpuhfQ",
+								"type": "default"
+							},
 							{
 								"key": "Content-Type",
 								"value": "application/json",
@@ -132,7 +199,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"test name\",\n    \"completed\": true\n}"
+							"raw": "{\n    \"name\": \"test asdasd\",\n    \"completed\": true\n}"
 						},
 						"url": {
 							"raw": "{{URL}}/tasks",
@@ -214,6 +281,11 @@
 								"key": "Content-Type",
 								"value": "application/json",
 								"type": "default"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bareer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzYTk2ODJiZDRkZmZiOTFhNWQxZTk3MiIsIm5hbWUiOiJzY3p4Y3p4Y3p4eGN2IiwiaWF0IjoxNjcyMDc0MjIwLCJleHAiOjE2NzIwNzc4MjB9.CNCRZGBldgPJucM_Ze3KH0rVxSHCndhzyrHzy86weI8",
+								"type": "default"
 							}
 						],
 						"body": {
@@ -221,13 +293,135 @@
 							"raw": "{\n    \"name\": \"test\",\n    \"completed\": true\n}"
 						},
 						"url": {
-							"raw": "{{URL}}/tasks/63a4682d6b6f00b76b13c02e",
+							"raw": "{{URL}}/tasks/63a97607c144cc9c0e5e0393",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
 								"tasks",
-								"63a4682d6b6f00b76b13c02e"
+								"63a97607c144cc9c0e5e0393"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Image",
+			"item": [
+				{
+					"name": "Resize Image",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{URL}}/image/resize?format=png&width=400&height=200&filename=c0dcdde5039489aacdcf53d983012a58a.png",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"image",
+								"resize"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "png"
+								},
+								{
+									"key": "width",
+									"value": "400"
+								},
+								{
+									"key": "height",
+									"value": "200"
+								},
+								{
+									"key": "filename",
+									"value": "c0dcdde5039489aacdcf53d983012a58a.png"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get File List",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "avatar",
+									"type": "file",
+									"src": [],
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/image/filelist",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"image",
+								"filelist"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/home/developer/Downloads/testscreen-large.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/image/upload?format=png&width=400&height=200",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"image",
+								"upload"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "png"
+								},
+								{
+									"key": "width",
+									"value": "400"
+								},
+								{
+									"key": "height",
+									"value": "200"
+								}
 							]
 						}
 					},

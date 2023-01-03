@@ -11,6 +11,8 @@ const routes = require('./routes/router')
 
 mongoose.set('strictQuery', false);
 
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 //middlewares
 app.use(express.json())
 

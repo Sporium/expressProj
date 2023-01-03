@@ -3,6 +3,10 @@ const express = require('express')
 const router = express.Router()
 const authenticateJWT = require('../middleware/jwtAuth')
 
+
+const multer = require('multer');
+const upload = multer({dest: 'public/images'});
+
 const {
     signIn,
     signOut,
@@ -21,6 +25,8 @@ const {
 
 const {
     resizeImage,
+    uploadImage,
+    getFileList,
 } = require('../controllers/image.controller')
 
 
@@ -36,5 +42,7 @@ router.route('/auth/invalidate-token').post([authenticateJWT, invalidateJWT])
 
 
 router.route('/image/resize').get(resizeImage)
+router.route('/image/upload').post([upload.single('image'),uploadImage])
+router.route('/image/filelist').get(getFileList)
 
 module.exports =  router
