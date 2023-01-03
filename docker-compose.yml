@@ -10,3 +10,10 @@ services:
       - /usr/src/app/node_modules # Remove this if you have pure JS dependencies
     ports:
       - "8000:8000"
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - '27018:27017'
