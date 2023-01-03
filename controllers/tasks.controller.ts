@@ -2,11 +2,14 @@ import { Request, Response} from 'express'
 import {ITask, ITaskModel} from "../models/task.model";
 import {StatusCodes} from "http-status-codes";
 import {getTokenFromHeader} from "../helpers/helpers";
-import jwt, {JwtPayload} from "jsonwebtoken";
+import jwt from "jsonwebtoken";
+import {IUser} from "../models/user.model";
 const {Task, tasksCollection} = require('../models/task.model')
 const {User} = require('../models/user.model')
 const taskResource = require('../resources/task.resource')
 const asyncWrapper = require('../middleware/async')
+
+export interface JwtPayload extends IUser {}
 
 export interface ApiRequestInterface<T,Req = {}> extends Request<Req> {
     body: T
