@@ -9,10 +9,10 @@ const scheduler = () => {
     cron.schedule("0 */2 * * *", async function () {
         const expiredTokens: {_id: string}[] = []
        await AuthTokenBlackList.find({}).then((tokenList: IToken[]) => {
-            tokenList.map(tok => {
-                jwt.verify(tok.token, JWT_KEY || '', (err:  jwt.VerifyErrors | null) => {
+            tokenList.map(token => {
+                jwt.verify(token.token, JWT_KEY || '', (err:  jwt.VerifyErrors | null) => {
                     if (err) {
-                        expiredTokens.push({_id: tok._id})
+                        expiredTokens.push({_id: token._id})
                     }
                     return err
                 })
