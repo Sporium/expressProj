@@ -2,6 +2,8 @@ import {Response} from "express";
 import {ApiRequestInterface} from "../controllers/tasks.controller";
 import {publicImages} from "../config/constants";
 import {StatusCodes} from "http-status-codes";
+import {readFile, writeFile} from "fs/promises";
+import {resolve} from "path";
 
 const asyncWrapper = require('../middleware/async')
 const fs = require('fs')
@@ -70,13 +72,20 @@ const uploadImage = asyncWrapper(async (req: ImageRequestI, res: Response) => {
     if (!/^image/.test(image.mimetype)) {
         return res.sendStatus(StatusCodes.BAD_REQUEST);
     }
-    fs.rename(image.path, image.path + '.png',() => {
+    const filePath = image.path + '.png'
+    fs.rename(image.path,filePath ,() => {
         console.log("\nFile Renamed!\n");
     });
     if (Object.keys(req.query).length) {
         const { width, height, format } = formSize(req.query)
         res.type(`image/${format || 'png'}`)
-        resize(image.path + '.png', 'png', width, height).pipe(res)
+        //watermark
+        const watermark = sharp(await readFile(filePath)).composite([
+            {input: await readFile(resolve(`${publicImages}watermark.png`)), left: 40, top:  20}
+        ]).png().toBuffer()
+        await writeFile(resolve(filePath), await watermark)
+        // /-/watermark
+        resize(filePath, 'png', width, height).pipe(res)
     }
     else {
     res.sendStatus(StatusCodes.OK).json({});
