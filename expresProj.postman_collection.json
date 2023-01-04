@@ -386,7 +386,7 @@
 					"response": []
 				},
 				{
-					"name": "Upload Image",
+					"name": "Upload image",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -422,6 +422,34 @@
 									"key": "height",
 									"value": "200"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cloud upload",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": "/home/developer/Downloads/testscreen-large.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/image/cloud-upload",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"image",
+								"cloud-upload"
 							]
 						}
 					},

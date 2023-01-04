@@ -4,10 +4,13 @@ import {publicImages} from "../config/constants";
 import {StatusCodes} from "http-status-codes";
 import {readFile, writeFile} from "fs/promises";
 import {resolve} from "path";
+import {ManagedUpload} from "aws-sdk/lib/s3/managed_upload";
+import SendData = ManagedUpload.SendData;
 
 const asyncWrapper = require('../middleware/async')
 const fs = require('fs')
 const sharp = require('sharp')
+const s3 = require('../config/aws-config')
 
 type ImageFormatType = 'png'
 
@@ -36,6 +39,13 @@ const formSize = (data: ResizeQuery): {format: ImageFormatType, width: number, h
     const width = parseInt(data.width || defaultSize)
     const height = parseInt(data.height || defaultSize)
     return {format: data.format, width, height}
+}
+
+const addWatermark = async (filePath: string) => {
+    const watermark = sharp(await readFile(filePath)).composite([
+        {input: await readFile(resolve(`${publicImages}watermark.png`)), left: 40, top:  20}
+    ]).png().toBuffer()
+    await writeFile(resolve(filePath), await watermark)
 }
 
 const resizeImage = asyncWrapper(async (req: ApiRequestInterface<{}, {}, {}, ResizeQuery>, res: Response) => {
@@ -67,6 +77,26 @@ interface ImageRequestI extends ApiRequestInterface<{},{},{}, ResizeQuery> {
 }
 
 const uploadImage = asyncWrapper(async (req: ImageRequestI, res: Response) => {
+    const image = req.file;
+    if (!image) return res.sendStatus(StatusCodes.BAD_REQUEST).json({message: "Please upload image"});
+    if (!/^image/.test(image.mimetype)) {
+        return res.sendStatus(StatusCodes.BAD_REQUEST);
+    }
+    const filePath = image.path + '.png'
+    fs.rename(image.path, filePath, () => {
+        console.log("\nFile Renamed!\n");
+    });
+    if (Object.keys(req.query).length) {
+        const {width, height, format} = formSize(req.query)
+        res.type(`image/${format || 'png'}`)
+        await addWatermark(filePath)
+        resize(filePath, 'png', width, height).pipe(res)
+    } else {
+        res.sendStatus(StatusCodes.OK).json({});
+    }
+})
+
+const uploadToAWS = asyncWrapper(async (req: ImageRequestI, res: Response) => {
     const image  = req.file;
     if (!image) return res.sendStatus(StatusCodes.BAD_REQUEST).json({message: "Please upload image"});
     if (!/^image/.test(image.mimetype)) {
@@ -76,24 +106,28 @@ const uploadImage = asyncWrapper(async (req: ImageRequestI, res: Response) => {
     fs.rename(image.path,filePath ,() => {
         console.log("\nFile Renamed!\n");
     });
-    if (Object.keys(req.query).length) {
-        const { width, height, format } = formSize(req.query)
-        res.type(`image/${format || 'png'}`)
-        //watermark
-        const watermark = sharp(await readFile(filePath)).composite([
-            {input: await readFile(resolve(`${publicImages}watermark.png`)), left: 40, top:  20}
-        ]).png().toBuffer()
-        await writeFile(resolve(filePath), await watermark)
-        // /-/watermark
-        resize(filePath, 'png', width, height).pipe(res)
+    await addWatermark(filePath)
+    const fileToupload = fs.createReadStream(filePath)
+    const uploadParams = {
+        Bucket: 'nodeprojbucket',
+        Key: filePath,
+        Body: fileToupload,
+        ContentType: 'image/png',
+        ACL: 'public-read'
     }
-    else {
-    res.sendStatus(StatusCodes.OK).json({});
-}
+    s3.upload(uploadParams, function (err: Error, data: SendData) {
+        if (err) {
+            res.status(StatusCodes.BAD_REQUEST).json({err})
+        }
+        else {
+            res.status(StatusCodes.OK).json({location: data.Location})
+        }
+    })
 })
 
 module.exports = {
     resizeImage,
     uploadImage,
     getFileList,
+    uploadToAWS,
 }
