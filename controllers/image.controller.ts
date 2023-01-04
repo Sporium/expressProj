@@ -26,6 +26,20 @@ const resize = (path: string, format: ImageFormatType, width: number, height: nu
     return readStream.pipe(transform)
 }
 
+const getFilePath = (req: ImageRequestI, res: Response): string => {
+    const image  = req.file;
+    if (!image)  {
+        res.status(StatusCodes.BAD_REQUEST).json({message: "Please upload image"});
+    }
+    if (!/^image/.test(image.mimetype)) {
+        res.status(StatusCodes.BAD_REQUEST);
+    }
+    const filePath = image.path + '.png'
+    fs.rename(image.path,filePath ,() => {
+        console.log("\nFile Renamed!\n");
+    });
+    return filePath
+}
 
 interface ResizeQuery  {
     width: string
@@ -77,15 +91,7 @@ interface ImageRequestI extends ApiRequestInterface<{},{},{}, ResizeQuery> {
 }
 
 const uploadImage = asyncWrapper(async (req: ImageRequestI, res: Response) => {
-    const image = req.file;
-    if (!image) return res.sendStatus(StatusCodes.BAD_REQUEST).json({message: "Please upload image"});
-    if (!/^image/.test(image.mimetype)) {
-        return res.sendStatus(StatusCodes.BAD_REQUEST);
-    }
-    const filePath = image.path + '.png'
-    fs.rename(image.path, filePath, () => {
-        console.log("\nFile Renamed!\n");
-    });
+    const filePath = getFilePath(req, res)
     if (Object.keys(req.query).length) {
         const {width, height, format} = formSize(req.query)
         res.type(`image/${format || 'png'}`)
@@ -97,15 +103,7 @@ const uploadImage = asyncWrapper(async (req: ImageRequestI, res: Response) => {
 })
 
 const uploadToAWS = asyncWrapper(async (req: ImageRequestI, res: Response) => {
-    const image  = req.file;
-    if (!image) return res.sendStatus(StatusCodes.BAD_REQUEST).json({message: "Please upload image"});
-    if (!/^image/.test(image.mimetype)) {
-        return res.sendStatus(StatusCodes.BAD_REQUEST);
-    }
-    const filePath = image.path + '.png'
-    fs.rename(image.path,filePath ,() => {
-        console.log("\nFile Renamed!\n");
-    });
+    const filePath = getFilePath(req, res)
     await addWatermark(filePath)
     const fileToupload = fs.createReadStream(filePath)
     const uploadParams = {
