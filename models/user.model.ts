@@ -1,19 +1,17 @@
 import mongoose, { Schema } from "mongoose";
+import * as Mongoose from "mongoose";
 
 export interface IUser {
     name: string
-    id: string | number
     authTokens?: string[]
-}
-
-export interface IUserModel extends IUser {
-    _id: string,
-    __v: number
     password: string
 }
+export interface UserDocument extends IUser, Mongoose.Document {
+    id: string | number
+}
 
 
-const UserSchema = new Schema<IUser>({
+const UserSchema = new Schema<UserDocument>({
     name: { type: String, required: [true, 'Name is required'], maxLength: 20, unique: true },
     password: { type: String, required: [true, 'Password is required']},
     tasks: [{
@@ -24,5 +22,5 @@ const UserSchema = new Schema<IUser>({
 
 
 module.exports = {
-    User: mongoose.model<IUser>('User', UserSchema),
+    User: mongoose.model<UserDocument>('User', UserSchema),
 }

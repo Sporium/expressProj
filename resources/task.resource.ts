@@ -1,6 +1,6 @@
-import {ITask, ITaskModel} from "../models/task.model";
+import {ITask, ITaskDocument} from "../models/task.model";
 
-const taskResource = (task: ITaskModel): ITask => {
+const taskResource = (task: ITaskDocument): ITask => {
     return {
         completed: task.completed,
         name: task.name,

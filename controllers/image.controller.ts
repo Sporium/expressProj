@@ -1,11 +1,11 @@
 import {Response} from "express";
-import {ApiRequestInterface} from "../controllers/tasks.controller";
 import {publicImages} from "../config/constants";
 import {StatusCodes} from "http-status-codes";
 import {readFile, writeFile} from "fs/promises";
 import {resolve} from "path";
 import {ManagedUpload} from "aws-sdk/lib/s3/managed_upload";
 import SendData = ManagedUpload.SendData;
+import {ApiRequestInterface, IErrorResponse} from "../types/types";
 
 const asyncWrapper = require('../middleware/async')
 const fs = require('fs')
@@ -62,11 +62,11 @@ const addWatermark = async (filePath: string) => {
     await writeFile(resolve(filePath), await watermark)
 }
 
-const resizeImage = asyncWrapper(async (req: ApiRequestInterface<{}, {}, {}, ResizeQuery>, res: Response) => {
+const resizeImage = asyncWrapper(async (req: ApiRequestInterface<{}, {}, {}, ResizeQuery>, res: Response<IErrorResponse>) => {
     const { width, height, format } = formSize(req.query)
     fs.access(publicImages+req.query.filename, fs.F_OK, (err: NodeJS.ErrnoException | null) => {
         if (err) {
-            res.status(StatusCodes.BAD_REQUEST).json('File does not exist')
+            res.status(StatusCodes.BAD_REQUEST).json({message: 'File does not exist'})
             return;
         } else {
             res.type(`image/${format || 'png'}`)
@@ -77,10 +77,10 @@ const resizeImage = asyncWrapper(async (req: ApiRequestInterface<{}, {}, {}, Res
 
 })
 
-const getFileList = asyncWrapper(async (req: ApiRequestInterface, res: Response) => {
+const getFileList = asyncWrapper(async (req: ApiRequestInterface, res: Response<string[] | IErrorResponse>) => {
   await fs.readdir(publicImages, function (err: (NodeJS.ErrnoException | null), files: string[]) {
         if (err) {
-            res.status(StatusCodes.BAD_REQUEST).json({})
+            res.status(StatusCodes.BAD_REQUEST).json({message: err})
         }
         res.status(StatusCodes.OK).json(files)
   });
@@ -90,7 +90,7 @@ interface ImageRequestI extends ApiRequestInterface<{},{},{}, ResizeQuery> {
     file: Express.Multer.File
 }
 
-const uploadImage = asyncWrapper(async (req: ImageRequestI, res: Response) => {
+const uploadImage = asyncWrapper(async (req: ImageRequestI, res: Response<IErrorResponse>) => {
     const filePath = getFilePath(req, res)
     if (Object.keys(req.query).length) {
         const {width, height, format} = formSize(req.query)
@@ -98,11 +98,11 @@ const uploadImage = asyncWrapper(async (req: ImageRequestI, res: Response) => {
         await addWatermark(filePath)
         resize(filePath, 'png', width, height).pipe(res)
     } else {
-        res.sendStatus(StatusCodes.OK).json({});
+        res.sendStatus(StatusCodes.OK).json();
     }
 })
 
-const uploadToAWS = asyncWrapper(async (req: ImageRequestI, res: Response) => {
+const uploadToAWS = asyncWrapper(async (req: ImageRequestI, res: Response<{location: SendData['Location']} | IErrorResponse>) => {
     const filePath = getFilePath(req, res)
     await addWatermark(filePath)
     const fileToupload = fs.createReadStream(filePath)
@@ -115,7 +115,7 @@ const uploadToAWS = asyncWrapper(async (req: ImageRequestI, res: Response) => {
     }
     s3.upload(uploadParams, function (err: Error, data: SendData) {
         if (err) {
-            res.status(StatusCodes.BAD_REQUEST).json({err})
+            res.status(StatusCodes.BAD_REQUEST).json({message: err})
         }
         else {
             res.status(StatusCodes.OK).json({location: data.Location})

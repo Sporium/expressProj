@@ -1,50 +1,47 @@
 import { Request, Response} from 'express'
-import {ITask, ITaskModel} from "../models/task.model";
+import {ITask, ITaskDocument} from "../models/task.model";
 import {StatusCodes} from "http-status-codes";
-import {getTokenFromHeader} from "../helpers/helpers";
-import jwt from "jsonwebtoken";
-import {IUser} from "../models/user.model";
+import {decodeJwt} from "../helpers/helpers";
+import {ApiRequestInterface, IErrorResponse} from "../types/types";
 const {Task, tasksCollection} = require('../models/task.model')
 const {User} = require('../models/user.model')
 const taskResource = require('../resources/task.resource')
 const asyncWrapper = require('../middleware/async')
 
-export interface JwtPayload extends IUser {}
 
-export interface ApiRequestInterface<ReqDictionary = {}, ResBody = {}, ReqBody = {}, ReqQuery = {}> extends
-    Request<ReqDictionary, ResBody, ReqBody, ReqQuery> {}
 
 export type TaskParamsType = {
     id: string | number
 }
 
-const getAllTasks = asyncWrapper(async (req: Request, res: Response) => {
+const getAllTasks = asyncWrapper(async (req: Request, res: Response<ITask | IErrorResponse>) => {
     try {
         const tasks = await Task.find({})
         res.status(StatusCodes.OK).json(tasksCollection(tasks))
     }
     catch (e) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(e)
+        const err = e as Error
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: err})
     }
 })
 
-const createTask = asyncWrapper (async (req: ApiRequestInterface<ITask>, res: Response) => {
+const createTask = asyncWrapper (async (req: ApiRequestInterface<ITask>, res: Response<ITask | IErrorResponse>) => {
     try {
         await Task.validate(req.body)
         const task = await Task.create(req.body)
-        const token = jwt.decode(getTokenFromHeader(req.headers.authorization)) as JwtPayload
+        const token = decodeJwt(req.headers.authorization)
         await User.findOneAndUpdate({ _id: token.id }, {$push: {tasks: task._id}}, { new: true, useFindAndModify: true });  //update users relation
         res.status(StatusCodes.CREATED).json(taskResource(task))
     }
     catch (e) {
         const err = e as Error
-        res.status(StatusCodes.BAD_REQUEST).json(err.errors['name'].message)
+        res.status(StatusCodes.BAD_REQUEST).json({message: err.errors['name'].message})
     }
 })
 
-const getTask = asyncWrapper( async (req: ApiRequestInterface<TaskParamsType>, res: Response) => {
+const getTask = asyncWrapper( async (req: ApiRequestInterface<TaskParamsType>, res: Response<ITask | IErrorResponse>) => {
     const taskId = req.params.id
-    return Task.findOne({_id: taskId}).exec((error: ErrorCallback, task: ITaskModel | undefined) => {
+    return Task.findOne({_id: taskId}).exec((error: ErrorCallback, task: ITaskDocument | undefined) => {
         if (task) {
             res.status(StatusCodes.OK).json(taskResource(task))
         } else {
@@ -53,7 +50,7 @@ const getTask = asyncWrapper( async (req: ApiRequestInterface<TaskParamsType>, r
     });
 })
 
-const getTaskByUser = asyncWrapper( async (req: ApiRequestInterface<{},{},{},TaskParamsType>, res: Response) => {
+const getTaskByUser = asyncWrapper( async (req: ApiRequestInterface<{},{},{},TaskParamsType>, res: Response<ITask | IErrorResponse>) => {
     if (req.query.id) {
         try {
             const userTasks = await User.findOne({_id: req.query.id}).populate('tasks');
@@ -68,13 +65,13 @@ const getTaskByUser = asyncWrapper( async (req: ApiRequestInterface<{},{},{},Tas
     }
 })
 
-const updateTask = asyncWrapper(async (req: ApiRequestInterface<ITask,TaskParamsType>, res: Response) => {
+const updateTask = asyncWrapper(async (req: ApiRequestInterface<TaskParamsType>, res: Response<ITask | IErrorResponse>) => {
     const taskId = req.params.id
     return Task.findOneAndUpdate({ _id: taskId }, req.body, {
         new: true,
         runValidators: true,
         useFindAndModify: true
-    }).exec((error: ErrorCallback, task: ITaskModel | undefined) => {
+    }).exec((error: ErrorCallback, task: ITaskDocument | undefined) => {
         if (task) {
             res.status(StatusCodes.OK).json(taskResource(task))
         } else {
@@ -83,11 +80,11 @@ const updateTask = asyncWrapper(async (req: ApiRequestInterface<ITask,TaskParams
     });
 })
 
-const deleteTask = asyncWrapper(async (req: ApiRequestInterface<TaskParamsType>, res: Response) => {
+const deleteTask = asyncWrapper(async (req: ApiRequestInterface<TaskParamsType>, res: Response<ITask | IErrorResponse>) => {
     const taskId = req.params.id
-    return Task.findOneAndDelete({ _id: taskId }).exec( async (error: ErrorCallback, task: ITaskModel | undefined) => {
+    return Task.findOneAndDelete({ _id: taskId }).exec( async (error: ErrorCallback, task: ITaskDocument | undefined) => {
             if (task) {
-                const token = jwt.decode(getTokenFromHeader(req.headers.authorization)) as JwtPayload
+                const token = decodeJwt(req.headers.authorization)
                 User.findOneAndUpdate({ _id: token.id }, {$pull: {tasks: task._id}}, { new: true, useFindAndModify: true }); //update users relation
                 res.status(StatusCodes.OK).json(taskResource(task))
             } else {
