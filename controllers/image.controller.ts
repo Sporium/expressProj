@@ -1,11 +1,13 @@
 import {Response} from "express";
-import {publicImages} from "../config/constants";
+import {AWS_BUCKET_NAME, publicImages} from "../config/constants";
 import {StatusCodes} from "http-status-codes";
 import {readFile, writeFile} from "fs/promises";
 import {resolve} from "path";
 import {ManagedUpload} from "aws-sdk/lib/s3/managed_upload";
 import SendData = ManagedUpload.SendData;
 import {ApiRequestInterface, IErrorResponse} from "../types/types";
+import {AWSError} from "aws-sdk";
+import {ListObjectsV2Output} from "aws-sdk/clients/s3";
 
 const asyncWrapper = require('../middleware/async')
 const fs = require('fs')
@@ -34,6 +36,7 @@ const getFilePath = (req: ImageRequestI, res: Response): string => {
     if (!/^image/.test(image.mimetype)) {
         res.status(StatusCodes.BAD_REQUEST);
     }
+    console.log(req.file,'image.path')
     const filePath = image.path + '.png'
     fs.rename(image.path,filePath ,() => {
         console.log("\nFile Renamed!\n");
@@ -76,14 +79,45 @@ const resizeImage = asyncWrapper(async (req: ApiRequestInterface<{}, {}, {}, Res
     })
 
 })
+type StoredFileType = {isLocal: boolean, path: string}
+const getLocalFiles = async (res: Response<IErrorResponse>, baseUrl: string): Promise<StoredFileType[]> => {
+    return new Promise((resolve) => {
+        fs.readdir(publicImages, function (err: (NodeJS.ErrnoException | null), files: string[]) {
+            if (err) {
+                res.status(StatusCodes.BAD_REQUEST).json({message: err})
+            }
+            return resolve(files?.map(file => {
+                return {
+                    isLocal: true,
+                    path: `${baseUrl}/images/${file}`
+                }
+            }))
+        });
+    })
+}
+const getCloudFiles = async (res: Response<IErrorResponse>): Promise<StoredFileType[]> => {
+    return new Promise((resolve) => {
+        s3.listObjectsV2({Bucket: AWS_BUCKET_NAME}, function (err: AWSError,data: ListObjectsV2Output) {
+            if (err) {
+                res.status(StatusCodes.BAD_REQUEST).json({message: err})
+            }
+            if (data.Contents) {
+                return resolve(data.Contents.map(file => {
+                    return {
+                        isLocal: false,
+                        path: `https://${AWS_BUCKET_NAME}.s3.amazonaws.com/${file.Key}`
+                    }
+                }))
+            }
+        })
+    })
+}
 
-const getFileList = asyncWrapper(async (req: ApiRequestInterface, res: Response<string[] | IErrorResponse>) => {
-  await fs.readdir(publicImages, function (err: (NodeJS.ErrnoException | null), files: string[]) {
-        if (err) {
-            res.status(StatusCodes.BAD_REQUEST).json({message: err})
-        }
-        res.status(StatusCodes.OK).json(files)
-  });
+const getFileList = asyncWrapper(async (req: ApiRequestInterface, res: Response<StoredFileType[] | IErrorResponse>) => {
+    const fullUrl = req.protocol + '://' + req.get('host');
+    let localFiles: StoredFileType[] = await getLocalFiles(res,fullUrl)
+    let cloudFiles: StoredFileType[] = await getCloudFiles(res)
+    res.status(StatusCodes.OK).json([...localFiles,...cloudFiles])
 })
 
 interface ImageRequestI extends ApiRequestInterface<{},{},{}, ResizeQuery> {
@@ -107,8 +141,8 @@ const uploadToAWS = asyncWrapper(async (req: ImageRequestI, res: Response<{locat
     await addWatermark(filePath)
     const fileToupload = fs.createReadStream(filePath)
     const uploadParams = {
-        Bucket: 'nodeprojbucket',
-        Key: filePath,
+        Bucket: AWS_BUCKET_NAME,
+        Key: filePath.replace('public/',''),
         Body: fileToupload,
         ContentType: 'image/png',
         ACL: 'public-read'

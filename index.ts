@@ -8,11 +8,14 @@ const app: Express = express();
 const port = process.env.PORT;
 const notFound = require('./middleware/not-found')
 const routes = require('./routes/router')
+const path=require('path');
 
 mongoose.set('strictQuery', false);
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(express.static(path.resolve('./public')));
+
 //middlewares
 app.use(express.json())
 
