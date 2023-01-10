@@ -13,7 +13,6 @@
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.0",
     "@types/mongoose": "^5.11.97",
-    "@types/multer": "^1.4.7",
     "aws-sdk": "^2.1287.0",
     "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
@@ -28,6 +27,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.15",
+    "@types/multer": "^1.4.7",
     "@types/node": "^18.11.17",
     "concurrently": "^7.6.0",
     "nodemon": "^2.0.20",
