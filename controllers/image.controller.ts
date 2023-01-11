@@ -14,7 +14,7 @@ const fs = require('fs')
 const sharp = require('sharp')
 const s3 = require('../config/aws-config')
 
-type ImageFormatType = 'png'
+type ImageFormatType = 'png' | 'jpg' | 'jpeg'
 
 const resize = (path: string, format: ImageFormatType, width: number, height: number) => {
     const readStream = fs.createReadStream(path)
@@ -36,8 +36,8 @@ const getFilePath = (req: ImageRequestI, res: Response): string => {
     if (!/^image/.test(image.mimetype)) {
         res.status(StatusCodes.BAD_REQUEST);
     }
-    console.log(req.file,'image.path')
-    const filePath = image.path + '.png'
+    const fileType = image.originalname.split('.').pop()
+    const filePath = image.path + '.' + (req.query.format || fileType)
     fs.rename(image.path,filePath ,() => {
         console.log("\nFile Renamed!\n");
     });
@@ -128,9 +128,8 @@ const uploadImage = asyncWrapper(async (req: ImageRequestI, res: Response<IError
     const filePath = getFilePath(req, res)
     if (Object.keys(req.query).length) {
         const {width, height, format} = formSize(req.query)
-        res.type(`image/${format || 'png'}`)
         await addWatermark(filePath)
-        resize(filePath, 'png', width, height).pipe(res)
+        resize(filePath, format, width, height).pipe(res)
     } else {
         res.sendStatus(StatusCodes.OK).json();
     }
