@@ -41,8 +41,8 @@ router.route('/auth/invalidate-token').post([authenticateJWT, invalidateJWT])
 
 
 router.route('/image/resize').get(resizeImage)
-router.route('/image/upload').post([upload.single('image'),uploadImage])
-router.route('/image/cloud-upload').post([upload.single('image'),uploadToAWS])
+router.route('/image/upload').post([upload,uploadImage])
+router.route('/image/cloud-upload').post([upload,uploadToAWS])
 router.route('/image/filelist').get(getFileList)
 
 module.exports =  router
